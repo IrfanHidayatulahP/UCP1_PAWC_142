@@ -1,0 +1,150 @@
+<div class="container mt-5">
+    <h1 class="text-center">Daftar Hewan</h1>
+
+    <!-- Form to Add New Hewan -->
+    <form id="addHewanForm" class="my-4">
+        <div class="form-group">
+            <label for="newNama">Nama Hewan:</label>
+            <input type="text" id="newNama" class="form-control" placeholder="Masukkan nama hewan" required>
+        </div>
+        <div class="form-group">
+            <label for="newSpesies">Spesies:</label>
+            <input type="text" id="newSpesies" class="form-control" placeholder="Masukkan spesies" required>
+        </div>
+        <div class="form-group">
+            <label for="newUmur">Umur:</label>
+            <input type="number" id="newUmur" class="form-control" placeholder="Masukkan umur" required>
+        </div>
+        <div class="form-group">
+            <label for="newDeskripsi">Deskripsi:</label>
+            <textarea id="newDeskripsi" class="form-control" rows="3" placeholder="Masukkan deskripsi hewan" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Tambah Hewan</button>
+    </form>
+
+    <!-- List of Hewan -->
+    <ul id="hewanList" class="list-group">
+        <% hewans.forEach(hewan => { %>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+                <strong><%= hewan.nama %></strong> (<%= hewan.spesies %>) - <%= hewan.umur %> tahun
+                <p class="mb-0"><%= hewan.deskripsi %></p>
+            </div>
+            <div>
+                <button class="btn btn-sm btn-success mr-2 editBtn" data-id="<%= hewan.id %>">Edit</button>
+                <button class="btn btn-sm btn-danger deleteBtn" data-id="<%= hewan.id %>">Delete</button>
+            </div>
+        </li>
+        <% }); %>
+    </ul>
+
+    <!-- Edit Hewan Modal -->
+    <div id="editModal" class="modal fade" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Edit Hewan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editHewanForm">
+                        <div class="form-group">
+                            <label for="editNama">Nama Hewan:</label>
+                            <input type="text" id="editNama" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editSpesies">Spesies:</label>
+                            <input type="text" id="editSpesies" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editUmur">Umur:</label>
+                            <input type="number" id="editUmur" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editDeskripsi">Deskripsi:</label>
+                            <textarea id="editDeskripsi" class="form-control" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-3">Simpan Perubahan</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Add new hewan
+        $('#addHewanForm').on('submit', function(e) {
+            e.preventDefault();
+            const hewan = {
+                nama: $('#newNama').val().trim(),
+                spesies: $('#newSpesies').val().trim(),
+                umur: $('#newUmur').val().trim(),
+                deskripsi: $('#newDeskripsi').val().trim()
+            };
+            if (hewan.nama && hewan.spesies && hewan.umur && hewan.deskripsi) {
+                $.ajax({
+                    url: '/hewan',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(hewan),
+                    success: function(newHewan) {
+                        location.reload(); // Reload to show the new hewan
+                    },
+                    error: function(error) {
+                        console.error("Error adding hewan:", error.responseText);
+                    }
+                });
+            }
+        });
+
+        // Delete a hewan
+        $('.deleteBtn').on('click', function() {
+            const id = $(this).data('id');
+            $.ajax({
+                url: '/hewan/' + id,
+                type: 'DELETE',
+                success: function() {
+                    location.reload(); // Reload to show updated list
+                }
+            });
+        });
+
+        // Show edit modal with the current hewan data
+        let editId;
+        $('.editBtn').on('click', function() {
+            editId = $(this).data('id');
+            const li = $(this).closest('li');
+            $('#editNama').val(li.find('strong').text());
+            const details = li.find('p').text();
+            $('#editSpesies').val(details.split(' ')[0]);
+            $('#editUmur').val(parseInt(details.split(' ')[2]));
+            $('#editDeskripsi').val(details);
+            $('#editModal').modal('show');
+        });
+
+        // Update hewan on form submission
+        $('#editHewanForm').on('submit', function(e) {
+            e.preventDefault();
+            const hewan = {
+                nama: $('#editNama').val().trim(),
+                spesies: $('#editSpesies').val().trim(),
+                umur: $('#editUmur').val().trim(),
+                deskripsi: $('#editDeskripsi').val().trim()
+            };
+            if (hewan.nama && hewan.spesies && hewan.umur && hewan.deskripsi) {
+                $.ajax({
+                    url: '/hewan/' + editId,
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(hewan),
+                    success: function() {
+                        location.reload(); // Reload to show updated hewan
+                    }
+                });
+            }
+        });
+    });
+</script>

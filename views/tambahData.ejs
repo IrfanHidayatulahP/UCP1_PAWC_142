@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambah Data Hewan</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="my-4">Tambah Data Hewan</h1>
+        <form id="hewanForm" action="/hewan" method="POST">
+            <!-- Field untuk Nama -->
+            <div class="form-group">
+                <label for="nama">Nama Hewan:</label>
+                <input type="text" class="form-control" id="nama" name="nama" placeholder="Masukkan nama hewan" required>
+            </div>
+            
+            <!-- Field untuk Spesies -->
+            <div class="form-group">
+                <label for="spesies">Spesies:</label>
+                <input type="text" class="form-control" id="spesies" name="spesies" placeholder="Masukkan spesies hewan" required>
+            </div>
+            
+            <!-- Field untuk Umur -->
+            <div class="form-group">
+                <label for="umur">Umur:</label>
+                <input type="number" class="form-control" id="umur" name="umur" placeholder="Masukkan umur hewan (tahun)" required>
+            </div>
+            
+            <!-- Field untuk Deskripsi -->
+            <div class="form-group">
+                <label for="deskripsi">Deskripsi:</label>
+                <textarea class="form-control" id="deskripsi" name="deskripsi" rows="5" placeholder="Masukkan deskripsi tentang hewan" required></textarea>
+            </div>
+            
+            <!-- Tombol Submit -->
+            <button type="submit" class="btn btn-primary">Tambah Hewan</button>
+        </form>
+    </div>
+
+    <!-- Opsional: Tambahkan JavaScript untuk validasi tambahan -->
+    <script>
+        document.getElementById('hewanForm').addEventListener('submit', function(event) {
+            // Validasi dasar (opsional, dapat dihapus jika HTML5 validasi sudah cukup)
+            const nama = document.getElementById('nama').value.trim();
+            const spesies = document.getElementById('spesies').value.trim();
+            const umur = document.getElementById('umur').value.trim();
+            const deskripsi = document.getElementById('deskripsi').value.trim();
+
+            if (!nama || !spesies || !umur || !deskripsi) {
+                event.preventDefault();
+                alert('Semua field harus diisi!');
+            }
+        });
+    </script>
+</body>
+
+</html>
